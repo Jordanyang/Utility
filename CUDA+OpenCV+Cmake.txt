@@ -1,0 +1,33 @@
+# 文件说明：使用cmake构建编译CUDA和OpenCV混合程序所必须包含的内容
+# 使用说明: 在CUDA程序文件集中直接包含该CMakeLists.txt即可正常构建编译目标程序
+# Date 2017-09-27
+# Author 杨洪余
+# set cmake version
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+# set project name
+PROJECT(gpuMat)
+# CUDA package
+FIND_PACKAGE(CUDA REQUIRED) 
+# OpenCV package
+FIND_PACKAGE(OpenCV REQUIRED) 
+# CUDA include directories
+INCLUDE(FindCUDA)
+# OpenCV include directories
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+# file name
+FILE(GLOB SOURCES "*.cu" "*.cpp" "*.h")
+# set NVCC compiler flags
+set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11 -g -G" )
+# CUDA execu
+CUDA_ADD_EXECUTABLE(app ${SOURCES})
+# C++ list
+LIST(APPEND CMAKE_CXX_FLAGS "-std=c++11 -O3 -ffast-math -Wall -pthread")
+# LIST(APPEND CMAKE_CXX_FLAGS "-pthread")
+# # # CUDA list
+# LIST(APPEND CUDA_NVCC_FLAGS --compiler-options -fno-strict-aliasing -lineinfo -use_fast_math -Xptxas -dlcm=cg)
+# LIST(APPEND CUDA_NVCC_FLAGS -gencode arch=compute_20,code=sm_20)
+# LIST(APPEND CUDA_NVCC_FLAGS -gencode arch=compute_30,code=sm_30)
+# LIST(APPEND CUDA_NVCC_FLAGS -gencode arch=compute_35,code=sm_35)
+# set target dependency
+TARGET_LINK_LIBRARIES(app;${OpenCV_LIBS})
